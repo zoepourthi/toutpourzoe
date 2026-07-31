@@ -240,8 +240,8 @@
 
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
-    <h1 Ouvre celle dont tu as besoin</h1>
-    <p>chaque lettre a un mot de passe différent mon amour. \n demande moi seulement quand tu voudras en lire une.</p>
+    <h1>Ouvre celle dont tu as besoin</h1>
+    <p>chaque lettre a un mot de passe différent mon amour.<br>demande moi seulement quand tu voudras en lire une.</p>
   </div>
 
   <div class="desk" id="desk"></div>
@@ -259,18 +259,12 @@
     - hint      : petite phrase visible même fermée
     - password  : le mot qu'elle doit taper pour ouvrir
     - text      : ton message (utilise \n pour aller à la ligne)
-    - images    : liste d'URLs d'images. Pour ajouter tes photos :
-        1. Héberge-les quelque part privé (ex: un lien direct
-           depuis Google Photos/Drive en partage "lien",
-           ou un service d'hébergement d'images), puis colle
-           l'URL directe ici.
-        2. OU convertis l'image en base64 et colle
-           "data:image/jpeg;base64,...." directement dans le tableau.
+    - images    : liste d'URLs d'images.
   ===========================================================
 */
 const sections = [
   {
-    id: "jet'aime",
+    id: "jetaime",
     seal: "<3",
     title: "Quand tu as besoin de te rappeler à quel point je t'aime",
     hint: "",
@@ -354,47 +348,49 @@ const sections = [
     id: "cricri",
     seal: "<3",
     title: "Quand on est fâchés",
-    hint: "alors que on s'aime d'amour"
-    password: "jeveuxdejaplusetrefaché",
+    hint: "alors que on s'aime d'amour",
+    password: "jeveuxdejaplusetrefache",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "envie",
+    seal: "<3",
+    title: "Quand tu as envie de moi",
+    hint: "et de plein d'amour",
+    password: "jeveuxtouttefaire",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "amourtoutdoux",
+    seal: "<3",
+    title: "Quand tu veux qu'on fasse l'amour tout doux",
+    hint: "en toi d'amour",
+    password: "toutdouxetpleindebisous",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "sielleabesoindemaqueue",
+    seal: "<3",
+    title: "Quand tu veux que je te baise comme une chienne",
+    hint: "que tu la veux fort dans tes trous",
+    password: "jeveuxtedefoncer",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "trucssimples",
+    seal: "<3",
+    title: "des trucs simples que je veux faire avec toi",
+    hint: "comme des amoureux",
+    password: "pleindamour",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
   }
 ];
-id: "envie",
-    seal: "<3",
-    title: "Quand tu as envie de moi",
-    hint: "et de plein d'amour"
-    password: "jeveuxtouttefaire",
-    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
-    images: []  
- }
-];
-id: "amourtoutdoux",
-    seal: "<3",
-    title: "Quand tu veux qu'on fasse l'amour tout doux",
-    hint: "en toi d'amour"
-    password: "toutdouxetpleindebisous",
-    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
-    images: []    
- }
-];
-id: "sielleabesoindemaqueue",
-    seal: "<3",
-    title: "Quand tu veux que je te baise comme une chienne",
-    hint: "que tu la veux fort dans tes trous"
-    password: "jeveuxtedefoncer",
-    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
-    images: []    
- }
-];
-id: "trucssimples",
-    seal: "<3",
-    title: "des trucs simples que je veux faire avec toi",
-    hint: "comme des amoureux"
-    password: "pleindamour",
-    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
-    images: []    
-  
+
 const desk = document.getElementById('desk');
 
 function renderSections(){
@@ -432,7 +428,6 @@ function renderSections(){
     desk.appendChild(card);
   });
 
-  // wire up open buttons + enter key
   document.querySelectorAll('.lock-row button').forEach(btn => {
     btn.addEventListener('click', () => tryOpen(btn.dataset.id));
   });
