@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pour toi</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#f4e9db;
+    --night:#211321;
+    --night2:#2c1a2c;
+    --wax:#8c2f39;
+    --wax-light:#b85560;
+    --gold:#c9a86a;
+    --gold-dim:#8f7a52;
+    --paper:#f6ecd9;
+    --paper-shadow:#d9c9a8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at 20% 0%, #33203a 0%, transparent 55%),
+      radial-gradient(ellipse at 80% 100%, #2a1830 0%, transparent 55%),
+      var(--night);
+    color:var(--ink);
+    font-family:'Crimson Text', serif;
+    min-height:100vh;
+    padding:0 0 80px 0;
+  }
+  .hero{
+    text-align:center;
+    padding:90px 24px 50px;
+  }
+  .hero .eyebrow{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.28em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin-bottom:18px;
+  }
+  .hero h1{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-style:italic;
+    font-size:clamp(38px, 6vw, 64px);
+    margin:0 0 18px;
+    color:var(--paper);
+    letter-spacing:0.01em;
+  }
+  .hero p{
+    max-width:480px;
+    margin:0 auto;
+    font-size:18px;
+    line-height:1.6;
+    color:#cbb9c9;
+  }
+  .desk{
+    max-width:920px;
+    margin:40px auto 0;
+    padding:0 24px;
+    display:grid;
+    grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
+    gap:28px;
+  }
+  .envelope{
+    position:relative;
+    background:linear-gradient(160deg, var(--paper) 0%, var(--paper-shadow) 100%);
+    border-radius:6px;
+    box-shadow:0 18px 40px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.05) inset;
+    color:#2a1a12;
+    overflow:hidden;
+    min-height:230px;
+    display:flex;
+    flex-direction:column;
+    transform:rotate(var(--tilt,0deg));
+    transition:transform .35s ease;
+  }
+  .envelope:nth-child(2n){ --tilt:0.6deg; }
+  .envelope:nth-child(3n){ --tilt:-0.6deg; }
+  .envelope:hover{ transform:rotate(0deg) translateY(-4px); }
+  .flap{
+    position:absolute;
+    top:0; left:0; right:0;
+    height:96px;
+    background:linear-gradient(135deg, #e9d9bb, #d6c19a);
+    clip-path:polygon(0 0, 50% 62%, 100% 0);
+    transition:clip-path .5s cubic-bezier(.4,0,.2,1), height .5s ease;
+  }
+  .envelope.open .flap{
+    clip-path:polygon(0 0, 50% 0%, 100% 0);
+    height:0;
+  }
+  .seal{
+    position:absolute;
+    top:52px; left:50%;
+    transform:translate(-50%,0);
+    width:46px; height:46px;
+    border-radius:50%;
+    background:radial-gradient(circle at 35% 30%, var(--wax-light), var(--wax) 70%);
+    box-shadow:0 4px 8px rgba(0,0,0,0.35);
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Cormorant Garamond',serif;
+    font-style:italic;
+    color:#f6e6c9;
+    font-size:13px;
+    z-index:2;
+    transition:opacity .3s ease, transform .3s ease;
+  }
+  .envelope.open .seal{ opacity:0; transform:translate(-50%,-10px) scale(.7); pointer-events:none; }
+
+  .card-body{
+    margin-top:96px;
+    padding:20px 22px 24px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    flex:1;
+    transition:margin-top .5s ease;
+  }
+  .envelope.open .card-body{ margin-top:20px; }
+
+  .label{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.18em;
+    text-transform:uppercase;
+    color:#8a6a3f;
+  }
+  .title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:26px;
+    margin:0;
+    color:#3a2416;
+  }
+  .hint{
+    font-size:15px;
+    color:#5c4630;
+    font-style:italic;
+    line-height:1.4;
+  }
+
+  .lock-row{
+    display:flex;
+    gap:8px;
+    margin-top:auto;
+  }
+  .lock-row input{
+    flex:1;
+    padding:10px 12px;
+    border-radius:4px;
+    border:1px solid #b79f74;
+    background:#fffaf0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    color:#3a2416;
+  }
+  .lock-row input:focus{ outline:2px solid var(--wax); outline-offset:1px; }
+  .lock-row button{
+    background:var(--wax);
+    color:#fbe9d6;
+    border:none;
+    border-radius:4px;
+    padding:0 16px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    letter-spacing:0.05em;
+    cursor:pointer;
+    transition:background .2s ease;
+  }
+  .lock-row button:hover{ background:#a53c47; }
+  .error{
+    font-family:'IBM Plex Mono', monospace;
+    font-size:12px;
+    color:var(--wax);
+    min-height:16px;
+  }
+
+  .letter{
+    display:none;
+    flex-direction:column;
+    gap:14px;
+  }
+  .envelope.open .lock-row, .envelope.open .locked-hint{ display:none; }
+  .envelope.open .letter{ display:flex; }
+
+  .letter p{
+    font-size:17px;
+    line-height:1.65;
+    color:#3a2416;
+    white-space:pre-wrap;
+    margin:0;
+  }
+  .letter .gallery{
+    display:flex;
+    gap:10px;
+    flex-wrap:wrap;
+  }
+  .letter .gallery img{
+    width:120px;
+    height:120px;
+    object-fit:cover;
+    border-radius:6px;
+    box-shadow:0 6px 14px rgba(0,0,0,0.25);
+  }
+  .relock{
+    align-self:flex-start;
+    background:none;
+    border:1px solid #b79f74;
+    color:#5c4630;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.05em;
+    padding:6px 10px;
+    border-radius:4px;
+    cursor:pointer;
+    margin-top:4px;
+  }
+
+  footer{
+    text-align:center;
+    margin-top:70px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .envelope, .flap, .seal, .card-body{ transition:none; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="hero">
+    <div class="eyebrow">Des lettres qui attendent</div>
+    <h1>Ouvre celle dont tu as besoin</h1>
+    <p>Chaque enveloppe a son propre mot de passe. Demande-le-moi quand l'envie est là — pas avant.</p>
+  </div>
+
+  <div class="desk" id="desk"></div>
+
+  <footer>écrit avec les mains, scellé à la cire</footer>
+
+<script>
+/*
+  ===========================================================
+  MODIFIE TES LETTRES ICI.
+  Pour chaque section :
+    - id        : identifiant unique (pas d'espace)
+    - seal      : 2-3 lettres affichées sur le cachet de cire
+    - title     : titre de la carte (visible même fermée)
+    - hint      : petite phrase visible même fermée
+    - password  : le mot qu'elle doit taper pour ouvrir
+    - text      : ton message (utilise \n pour aller à la ligne)
+    - images    : liste d'URLs d'images. Pour ajouter tes photos :
+        1. Héberge-les quelque part privé (ex: un lien direct
+           depuis Google Photos/Drive en partage "lien",
+           ou un service d'hébergement d'images), puis colle
+           l'URL directe ici.
+        2. OU convertis l'image en base64 et colle
+           "data:image/jpeg;base64,...." directement dans le tableau.
+  ===========================================================
+*/
+const sections = [
+  {
+    id: "envie-de-toi",
+    seal: "toi",
+    title: "Quand tu as envie de moi",
+    hint: "Pour les soirs où tu penses à moi.",
+    password: "motdepasse1",
+    text: "Écris ici ce que tu as envie de lui dire dans ce moment-là.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "reconfort",
+    seal: "câlin",
+    title: "Quand tu as besoin de réconfort",
+    hint: "Pour les jours un peu lourds.",
+    password: "motdepasse2",
+    text: "Écris ici les mots qui la rassurent, qui la posent.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "coup-de-mou",
+    seal: "là",
+    title: "Quand tu te sens mal",
+    hint: "Pour te rappeler que je suis là.",
+    password: "motdepasse3",
+    text: "Écris ici ce que tu veux qu'elle entende quand ça ne va pas.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "rigolade",
+    seal: "haha",
+    title: "Quand tu as envie de rigoler",
+    hint: "Pour les jours qui ont besoin de légèreté.",
+    password: "motdepasse4",
+    text: "Mets ici une blague, un souvenir drôle, une photo ridicule de toi.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "tu-me-manques",
+    seal: "loin",
+    title: "Quand je te manque",
+    hint: "Pour les jours où on est loin l'un de l'autre.",
+    password: "motdepasse5",
+    text: "Écris ici ce que tu veux qu'elle sache sur la distance, l'attente.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "doute",
+    seal: "force",
+    title: "Quand tu doutes de toi",
+    hint: "Pour les jours où elle ne se sent pas à la hauteur.",
+    password: "motdepasse6",
+    text: "Écris ici ce qui la fait se sentir forte, capable, vue.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "envie-de-parler",
+    seal: "toi&moi",
+    title: "Quand tu as besoin de parler",
+    hint: "Pour quand elle veut juste être écoutée.",
+    password: "motdepasse7",
+    text: "Écris ici comment tu veux qu'elle se sente en te parlant : écoutée, en sécurité.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "souvenirs",
+    seal: "nous",
+    title: "Quand tu as envie de nostalgie",
+    hint: "Pour se souvenir d'où on vient.",
+    password: "motdepasse8",
+    text: "Raconte ici un souvenir précis de vous deux, un moment marquant.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "fierte",
+    seal: "bravo",
+    title: "Quand tu as besoin qu'on soit fier de toi",
+    hint: "Pour les jours où elle a réussi quelque chose, même petit.",
+    password: "motdepasse9",
+    text: "Écris ici à quel point tu es fier d'elle, et pourquoi.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "apres-dispute",
+    seal: "paix",
+    title: "Quand on s'est disputés",
+    hint: "Pour recoller les morceaux après une engueulade.",
+    password: "motdepasse10",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  }
+];
+
+const desk = document.getElementById('desk');
+
+function renderSections(){
+  desk.innerHTML = "";
+  sections.forEach(sec => {
+    const card = document.createElement('div');
+    card.className = 'envelope';
+    card.id = 'card-' + sec.id;
+
+    const imagesHtml = (sec.images && sec.images.length)
+      ? `<div class="gallery">${sec.images.map(src => `<img src="${src}" alt="">`).join('')}</div>`
+      : '';
+
+    card.innerHTML = `
+      <div class="flap"></div>
+      <div class="seal">${sec.seal}</div>
+      <div class="card-body">
+        <div class="label">Enveloppe scellée</div>
+        <h3 class="title">${sec.title}</h3>
+        <p class="hint locked-hint">${sec.hint}</p>
+
+        <div class="lock-row">
+          <input type="password" placeholder="mot de passe" data-id="${sec.id}">
+          <button data-id="${sec.id}">Ouvrir</button>
+        </div>
+        <div class="error" id="error-${sec.id}"></div>
+
+        <div class="letter">
+          <p>${sec.text}</p>
+          ${imagesHtml}
+          <button class="relock" data-id="${sec.id}">Refermer</button>
+        </div>
+      </div>
+    `;
+    desk.appendChild(card);
+  });
+
+  // wire up open buttons + enter key
+  document.querySelectorAll('.lock-row button').forEach(btn => {
+    btn.addEventListener('click', () => tryOpen(btn.dataset.id));
+  });
+  document.querySelectorAll('.lock-row input').forEach(inp => {
+    inp.addEventListener('keydown', e => {
+      if (e.key === 'Enter') tryOpen(inp.dataset.id);
+    });
+  });
+  document.querySelectorAll('.relock').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const card = document.getElementById('card-' + btn.dataset.id);
+      card.classList.remove('open');
+      const input = card.querySelector('input');
+      input.value = '';
+      document.getElementById('error-' + btn.dataset.id).textContent = '';
+    });
+  });
+}
+
+function tryOpen(id){
+  const sec = sections.find(s => s.id === id);
+  const card = document.getElementById('card-' + id);
+  const input = card.querySelector('input');
+  const errorEl = document.getElementById('error-' + id);
+
+  if (input.value === sec.password){
+    card.classList.add('open');
+    errorEl.textContent = '';
+  } else {
+    errorEl.textContent = 'Ce n\'est pas le bon mot… essaie encore.';
+    card.animate(
+      [{transform:'translateX(0)'},{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'translateX(0)'}],
+      {duration:250}
+    );
+  }
+}
+
+renderSections();
+</script>
+</body>
+</html>
