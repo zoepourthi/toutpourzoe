@@ -8,23 +8,19 @@
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,500&family=Crimson+Text:ital,wght@0,400;0,600;1,400&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#f4e9db;
-    --night:#211321;
-    --night2:#2c1a2c;
+    --ink:#3a3a3a;
+    --bg1:#fbdde6;
     --wax:#8c2f39;
     --wax-light:#b85560;
-    --gold:#c9a86a;
-    --gold-dim:#8f7a52;
-    --paper:#f6ecd9;
-    --paper-shadow:#d9c9a8;
+    --gold:#a98a63;
+    --gold-dim:#8a745a;
+    --paper:#e6cda0;
+    --paper-shadow:#c6a56c;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;padding:0;}
   body{
-    background:
-      radial-gradient(ellipse at 20% 0%, #33203a 0%, transparent 55%),
-      radial-gradient(ellipse at 80% 100%, #2a1830 0%, transparent 55%),
-      var(--night);
+    background:var(--bg1);
     color:var(--ink);
     font-family:'Crimson Text', serif;
     min-height:100vh;
@@ -48,7 +44,7 @@
     font-style:italic;
     font-size:clamp(38px, 6vw, 64px);
     margin:0 0 18px;
-    color:var(--paper);
+    color:var(--ink);
     letter-spacing:0.01em;
   }
   .hero p{
@@ -56,7 +52,7 @@
     margin:0 auto;
     font-size:18px;
     line-height:1.6;
-    color:#cbb9c9;
+    color:#5a5a5a;
   }
   .desk{
     max-width:920px;
@@ -65,12 +61,13 @@
     display:grid;
     grid-template-columns:repeat(auto-fit, minmax(260px,1fr));
     gap:28px;
+    align-items:start;
   }
   .envelope{
     position:relative;
     background:linear-gradient(160deg, var(--paper) 0%, var(--paper-shadow) 100%);
     border-radius:6px;
-    box-shadow:0 18px 40px rgba(0,0,0,0.45), 0 2px 0 rgba(255,255,255,0.05) inset;
+    box-shadow:0 18px 40px rgba(0,0,0,0.18), 0 2px 0 rgba(255,255,255,0.08) inset;
     color:#2a1a12;
     overflow:hidden;
     min-height:230px;
@@ -86,7 +83,7 @@
     position:absolute;
     top:0; left:0; right:0;
     height:96px;
-    background:linear-gradient(135deg, #e9d9bb, #d6c19a);
+    background:linear-gradient(135deg, #efdcb8, #dcc088);
     clip-path:polygon(0 0, 50% 62%, 100% 0);
     transition:clip-path .5s cubic-bezier(.4,0,.2,1), height .5s ease;
   }
@@ -101,7 +98,7 @@
     width:46px; height:46px;
     border-radius:50%;
     background:radial-gradient(circle at 35% 30%, var(--wax-light), var(--wax) 70%);
-    box-shadow:0 4px 8px rgba(0,0,0,0.35);
+    box-shadow:0 4px 8px rgba(0,0,0,0.25);
     display:flex;align-items:center;justify-content:center;
     font-family:'Cormorant Garamond',serif;
     font-style:italic;
@@ -128,18 +125,18 @@
     font-size:11px;
     letter-spacing:0.18em;
     text-transform:uppercase;
-    color:#8a6a3f;
+    color:#6e5738;
   }
   .title{
     font-family:'Cormorant Garamond', serif;
     font-weight:600;
     font-size:26px;
     margin:0;
-    color:#3a2416;
+    color:#2e2e2e;
   }
   .hint{
     font-size:15px;
-    color:#5c4630;
+    color:#4d4d4d;
     font-style:italic;
     line-height:1.4;
   }
@@ -153,11 +150,11 @@
     flex:1;
     padding:10px 12px;
     border-radius:4px;
-    border:1px solid #b79f74;
+    border:1px solid #b0946a;
     background:#fffaf0;
     font-family:'IBM Plex Mono', monospace;
     font-size:13px;
-    color:#3a2416;
+    color:#2e2e2e;
   }
   .lock-row input:focus{ outline:2px solid var(--wax); outline-offset:1px; }
   .lock-row button{
@@ -191,8 +188,10 @@
   .letter p{
     font-size:17px;
     line-height:1.65;
-    color:#3a2416;
+    color:#2e2e2e;
     white-space:pre-wrap;
+    overflow-wrap:break-word;
+    max-width:60ch;
     margin:0;
   }
   .letter .gallery{
@@ -205,13 +204,13 @@
     height:120px;
     object-fit:cover;
     border-radius:6px;
-    box-shadow:0 6px 14px rgba(0,0,0,0.25);
+    box-shadow:0 6px 14px rgba(0,0,0,0.2);
   }
   .relock{
     align-self:flex-start;
     background:none;
-    border:1px solid #b79f74;
-    color:#5c4630;
+    border:1px solid #b0946a;
+    color:#4d4d4d;
     font-family:'IBM Plex Mono', monospace;
     font-size:11px;
     letter-spacing:0.05em;
@@ -388,72 +387,72 @@ const sections = [
     password: "pleindamour",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "ce que j'adore chez toi",
+  },
+  {
+    id: "cequejadore",
     seal: "<3",
     title: "ce que j'adore chez toi",
     hint: "",
     password: "yenaplein",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "changemerci",
+  },
+  {
+    id: "changemerci",
     seal: "<3",
     title: "si tu veux savoir comment tu m'as changé",
     hint: "",
     password: "mercimonamour",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "visage",
+  },
+  {
+    id: "visage",
     seal: "<3",
     title: "ton visage",
     hint: "",
     password: "tueslaplusbelledesfemmes",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "mains",
+  },
+  {
+    id: "mains",
     seal: "<3",
     title: "tes mains",
     hint: "",
-    password: "lapremierechosequej'aitouché",
+    password: "lapremierechosequejaitouche",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "pieds",
+  },
+  {
+    id: "pieds",
     seal: "<3",
     title: "tes pieds",
     hint: "",
     password: "mespetibb",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "seins",
+  },
+  {
+    id: "seins",
     seal: "<3",
     title: "tes seins",
     hint: "",
-    password: "mesgrosbb"
+    password: "mesgrosbb",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
-  }
-];
-id: "cadeau",
+  },
+  {
+    id: "cadeau",
     seal: "<3",
     title: "choisis ton prochain cadeau",
     hint: "",
-    password: "cadeaudamour"
+    password: "cadeaudamour",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
   }
 ];
-  
+
 const desk = document.getElementById('desk');
 
 function renderSections(){
