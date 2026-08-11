@@ -11,8 +11,8 @@
   :root{
     --ink:#3a3a3a;
     --bg1:#fbdde6;
-    --wax:#8c2f39;
-    --wax-light:#b85560;
+    --wax:#5c2a42;
+    --wax-light:#7d4560;
     --gold:#a98a63;
     --gold-dim:#8a745a;
     --paper:#f0c9d3;
@@ -170,7 +170,7 @@
     cursor:pointer;
     transition:background .2s ease;
   }
-  .lock-row button:hover{ background:#a53c47; }
+  .lock-row button:hover{ background:#482133; }
   .error{
     font-family:'IBM Plex Mono', monospace;
     font-size:12px;
@@ -596,7 +596,7 @@ function spawnConfetti(originEl){
     piece.style.setProperty('--rot', (Math.random() * 360 - 180) + 'deg');
     piece.style.left = originX + 'px';
     piece.style.top = originY + 'px';
-    piece.style.color = Math.random() > 0.5 ? '#8c2f39' : '#c9a86a';
+    piece.style.color = Math.random() > 0.5 ? '#5c2a42' : '#c9a86a';
     piece.style.animationDuration = (700 + Math.random() * 400) + 'ms';
     document.body.appendChild(piece);
     piece.addEventListener('animationend', () => piece.remove());
