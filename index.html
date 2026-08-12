@@ -398,17 +398,114 @@
     color:var(--ink);
     min-height:28px;
   }
+
+  /* Jauge de progression */
+  .progress-wrap{
+    max-width:320px;
+    margin:0 auto 6px;
+    height:8px;
+    border-radius:6px;
+    background:rgba(0,0,0,0.08);
+    overflow:hidden;
+  }
+  .progress-bar{
+    height:100%;
+    width:0%;
+    background:var(--wax);
+    transition:width .5s ease;
+  }
+  .progress-text{
+    text-align:center;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:11px;
+    letter-spacing:0.12em;
+    text-transform:uppercase;
+    color:var(--gold-dim);
+    margin-bottom:10px;
+  }
+
+  /* Mode nuit/jour */
+  .mode-toggle{
+    position:fixed;
+    top:18px;
+    right:18px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid var(--wax);
+    background:var(--bg1);
+    color:var(--wax);
+    font-size:18px;
+    cursor:pointer;
+    z-index:60;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .3s ease, color .3s ease;
+  }
+  body.night{
+    --bg1:#241220;
+    --ink:#f2e0e8;
+    --paper:#3a1f2e;
+    --paper-shadow:#2a1522;
+  }
+  body.night .title{ color:#f6e8ef; }
+  body.night .hint{ color:#dfc3cf; }
+  body.night .letter p{ color:#f2e0e8; }
+  body.night .label{ color:#e6a9c1; }
+  body.night .lock-row input{ background:#3a1f2e; color:#f2e0e8; border-color:#6b3a52; }
+  body.night .relock{ color:#dfc3cf; border-color:#6b3a52; }
+  body.night .hero p{ color:#d9bfc8; }
+  body.night .wheel-panel{ background:#241220; }
+  body.night .wheel-title, body.night .wheel-result{ color:#f2e0e8; }
+  body.night .compliment-box{ color:#f2e0e8; }
+
+  /* Générateur de compliments */
+  .compliment-trigger{
+    display:block;
+    text-align:center;
+    margin:16px auto 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--wax);
+    background:none;
+    border:1px solid var(--wax);
+    border-radius:30px;
+    padding:12px 22px;
+    cursor:pointer;
+    width:fit-content;
+    transition:background .2s ease, color .2s ease;
+  }
+  .compliment-trigger:hover{ background:var(--wax); color:#fbe9d6; }
+  .compliment-box{
+    max-width:420px;
+    margin:18px auto 0;
+    text-align:center;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:21px;
+    color:var(--ink);
+    min-height:30px;
+    padding:0 20px;
+  }
 </style>
 </head>
 <body>
 
   <div class="bg-hearts" id="bgHearts"></div>
 
+  <button class="mode-toggle" id="modeToggle">🌙</button>
+
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
     <h1>LE PETIT SITE D'AMOUR POUR MA CHÉRIE</h1>
     <p>chaque lettre a un mot de passe différent mon cœur.<br>demande moi seulement quand tu voudras en lire une.</p>
   </div>
+
+  <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
+  <div class="progress-text" id="progressText"></div>
 
   <div class="desk" id="desk"></div>
 
@@ -426,6 +523,9 @@
       <div class="wheel-result" id="wheelResult"></div>
     </div>
   </div>
+
+  <button class="compliment-trigger" id="complimentTrigger">💬 Besoin d'un compliment ?</button>
+  <div class="compliment-box" id="complimentBox"></div>
 
   <footer>je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo</footer>
 
@@ -608,6 +708,14 @@ const sections = [
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
   },
+  {
+    id: "cadeau",
+    seal: "<3",
+    title: "choisis ton prochain cadeau",
+    hint: "",
+    password: "cadeaudamour",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
   }
 ];
 
@@ -682,6 +790,9 @@ function tryOpen(id){
       card.classList.remove('lifting');
       card.removeEventListener('animationend', handler);
     });
+    openedLetters.add(id);
+    localStorage.setItem('lettres-ouvertes', JSON.stringify([...openedLetters]));
+    updateProgress();
   } else {
     errorEl.textContent = 'Ce n\'est pas le bon mot… essaie encore.';
     card.animate(
@@ -829,6 +940,74 @@ wheelOverlay.addEventListener('click', (e) => {
   if (e.target === wheelOverlay) wheelOverlay.classList.remove('show');
 });
 wheelSpinBtn.addEventListener('click', spinWheel);
+
+/*
+  ===========================================================
+  JAUGE "LETTRES LUES"
+  Se met à jour automatiquement à chaque enveloppe ouverte.
+  Rien à modifier ici.
+  ===========================================================
+*/
+const progressBar = document.getElementById('progressBar');
+const progressText = document.getElementById('progressText');
+let openedLetters = new Set(JSON.parse(localStorage.getItem('lettres-ouvertes') || '[]'));
+
+function updateProgress(){
+  const total = sections.length;
+  const count = openedLetters.size;
+  const pct = total ? Math.round((count / total) * 100) : 0;
+  progressBar.style.width = pct + '%';
+  progressText.textContent = count + '/' + total + ' lettres ouvertes';
+}
+updateProgress();
+
+/*
+  ===========================================================
+  MODE NUIT / JOUR
+  Rien à modifier ici, juste un bouton qui bascule le thème.
+  ===========================================================
+*/
+const modeToggle = document.getElementById('modeToggle');
+if (localStorage.getItem('mode-nuit') === '1'){
+  document.body.classList.add('night');
+  modeToggle.textContent = '☀️';
+}
+modeToggle.addEventListener('click', () => {
+  const isNight = document.body.classList.toggle('night');
+  modeToggle.textContent = isNight ? '☀️' : '🌙';
+  localStorage.setItem('mode-nuit', isNight ? '1' : '0');
+});
+
+/*
+  ===========================================================
+  GÉNÉRATEUR DE COMPLIMENTS
+  Mets ici tes propres compliments, un par ligne entre
+  guillemets, séparés par une virgule.
+  ===========================================================
+*/
+const complimentsList = [
+  "Écris ici un compliment sincère pour elle.",
+  "Mets-en un deuxième, différent du premier.",
+  "Un troisième, sur un détail précis qu'elle a.",
+  "Autant que tu veux, plus il y en a plus la surprise dure."
+];
+const complimentTrigger = document.getElementById('complimentTrigger');
+const complimentBox = document.getElementById('complimentBox');
+let lastComplimentIndex = -1;
+
+complimentTrigger.addEventListener('click', () => {
+  let index;
+  do {
+    index = Math.floor(Math.random() * complimentsList.length);
+  } while (complimentsList.length > 1 && index === lastComplimentIndex);
+  lastComplimentIndex = index;
+  complimentBox.style.opacity = 0;
+  setTimeout(() => {
+    complimentBox.textContent = complimentsList[index];
+    complimentBox.style.transition = 'opacity .4s ease';
+    complimentBox.style.opacity = 1;
+  }, 150);
+});
 </script>
 </body>
 </html>
