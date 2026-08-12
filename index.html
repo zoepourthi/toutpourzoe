@@ -297,6 +297,107 @@
     animation:cardLift 0.6s ease;
     z-index:5;
   }
+
+  .wheel-trigger{
+    display:block;
+    text-align:center;
+    margin:50px auto 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--wax);
+    background:none;
+    border:1px solid var(--wax);
+    border-radius:30px;
+    padding:12px 22px;
+    cursor:pointer;
+    width:fit-content;
+    transition:background .2s ease, color .2s ease;
+  }
+  .wheel-trigger:hover{ background:var(--wax); color:#fbe9d6; }
+
+  .wheel-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(30,15,20,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:100;
+    padding:24px;
+  }
+  .wheel-overlay.show{ display:flex; }
+
+  .wheel-panel{
+    background:var(--bg1);
+    border-radius:12px;
+    padding:30px 26px;
+    max-width:360px;
+    width:100%;
+    text-align:center;
+    position:relative;
+    box-shadow:0 30px 70px rgba(0,0,0,0.4);
+  }
+  .wheel-close{
+    position:absolute;
+    top:10px; right:12px;
+    background:none;
+    border:none;
+    font-size:18px;
+    color:var(--ink);
+    cursor:pointer;
+    line-height:1;
+    padding:6px;
+  }
+  .wheel-title{
+    font-family:'Cormorant Garamond', serif;
+    font-weight:600;
+    font-size:22px;
+    color:var(--ink);
+    margin:4px 0 4px;
+  }
+  .wheel-wrap{
+    position:relative;
+    width:280px;
+    height:280px;
+    margin:14px auto 20px;
+  }
+  #wheelCanvas{
+    width:280px; height:280px;
+    transition:transform 4s cubic-bezier(.17,.67,.12,1);
+  }
+  .wheel-pointer{
+    position:absolute;
+    top:-6px; left:50%;
+    transform:translateX(-50%);
+    width:0; height:0;
+    border-left:12px solid transparent;
+    border-right:12px solid transparent;
+    border-top:18px solid var(--wax);
+    z-index:2;
+  }
+  .wheel-spin-btn{
+    background:var(--wax);
+    color:#fbe9d6;
+    border:none;
+    border-radius:6px;
+    padding:12px 22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.05em;
+    cursor:pointer;
+  }
+  .wheel-spin-btn:hover{ background:#482133; }
+  .wheel-spin-btn:disabled{ opacity:0.6; cursor:default; }
+  .wheel-result{
+    margin-top:16px;
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:20px;
+    color:var(--ink);
+    min-height:28px;
+  }
 </style>
 </head>
 <body>
@@ -310,6 +411,21 @@
   </div>
 
   <div class="desk" id="desk"></div>
+
+  <button class="wheel-trigger" id="wheelTrigger">🎬 Pas d'idée ? Tourne la roue</button>
+
+  <div class="wheel-overlay" id="wheelOverlay">
+    <div class="wheel-panel">
+      <button class="wheel-close" id="wheelClose">✕</button>
+      <div class="wheel-title">Qu'est-ce qu'on regarde ?</div>
+      <div class="wheel-wrap">
+        <div class="wheel-pointer"></div>
+        <canvas id="wheelCanvas" width="280" height="280"></canvas>
+      </div>
+      <button class="wheel-spin-btn" id="wheelSpinBtn">Tourner la roue</button>
+      <div class="wheel-result" id="wheelResult"></div>
+    </div>
+  </div>
 
   <footer>je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo</footer>
 
@@ -629,6 +745,98 @@ function spawnConfetti(originEl){
     piece.addEventListener('animationend', () => piece.remove());
   }
 }
+/*
+  ===========================================================
+  MODIFIE LES IDÉES DE LA ROUE ICI.
+  Mets simplement les titres de films/séries/trucs qu'elle aime,
+  un par ligne entre guillemets, séparés par une virgule.
+  Tu peux en mettre autant que tu veux (minimum 3).
+  ===========================================================
+*/
+const wheelItems = [
+  "Mets ici un film qu'elle aime",
+  "Une série qu'elle adore",
+  "Un film qu'elle veut voir depuis longtemps",
+  "Sa comédie préférée",
+  "Un truc pour rire à deux",
+  "Un film qui fait pleurer",
+  "Une série qu'on n'a jamais finie",
+  "Ta surprise à toi"
+];
+
+const wheelColors = ['#e6cda0','#f0c9d3','#dba9b7','#c893a3','#efdcb8','#dcc088','#c9a86a','#e0b7c3'];
+const wheelTrigger = document.getElementById('wheelTrigger');
+const wheelOverlay = document.getElementById('wheelOverlay');
+const wheelClose = document.getElementById('wheelClose');
+const wheelCanvas = document.getElementById('wheelCanvas');
+const wheelSpinBtn = document.getElementById('wheelSpinBtn');
+const wheelResult = document.getElementById('wheelResult');
+let wheelRotation = 0;
+let wheelSpinning = false;
+
+function drawWheel(){
+  const ctx = wheelCanvas.getContext('2d');
+  const n = wheelItems.length;
+  const cx = 140, cy = 140, r = 138;
+  const segAngle = (Math.PI * 2) / n;
+  ctx.clearRect(0, 0, 280, 280);
+  for (let i = 0; i < n; i++){
+    const start = i * segAngle;
+    const end = start + segAngle;
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+    ctx.arc(cx, cy, r, start, end);
+    ctx.closePath();
+    ctx.fillStyle = wheelColors[i % wheelColors.length];
+    ctx.fill();
+    ctx.strokeStyle = '#fff';
+    ctx.lineWidth = 2;
+    ctx.stroke();
+
+    ctx.save();
+    ctx.translate(cx, cy);
+    ctx.rotate(start + segAngle / 2);
+    ctx.textAlign = 'right';
+    ctx.fillStyle = '#2e2e2e';
+    ctx.font = '12px "Crimson Text", serif';
+    const label = wheelItems[i].length > 22 ? wheelItems[i].slice(0, 20) + '…' : wheelItems[i];
+    ctx.fillText(label, r - 14, 4);
+    ctx.restore();
+  }
+}
+
+function spinWheel(){
+  if (wheelSpinning) return;
+  wheelSpinning = true;
+  wheelSpinBtn.disabled = true;
+  wheelResult.textContent = '';
+
+  const n = wheelItems.length;
+  const randomIndex = Math.floor(Math.random() * n);
+  const segmentAngle = 360 / n;
+  const midAngle = randomIndex * segmentAngle + segmentAngle / 2;
+  const desiredFinal = (270 - midAngle + 360) % 360;
+  const base = Math.ceil(wheelRotation / 360) * 360;
+  const extraSpins = 6;
+  wheelRotation = base + extraSpins * 360 + desiredFinal;
+  wheelCanvas.style.transform = `rotate(${wheelRotation}deg)`;
+
+  setTimeout(() => {
+    wheelResult.textContent = '🎬 ' + wheelItems[randomIndex];
+    wheelSpinning = false;
+    wheelSpinBtn.disabled = false;
+  }, 4100);
+}
+
+wheelTrigger.addEventListener('click', () => {
+  wheelOverlay.classList.add('show');
+  drawWheel();
+});
+wheelClose.addEventListener('click', () => wheelOverlay.classList.remove('show'));
+wheelOverlay.addEventListener('click', (e) => {
+  if (e.target === wheelOverlay) wheelOverlay.classList.remove('show');
+});
+wheelSpinBtn.addEventListener('click', spinWheel);
 </script>
 </body>
 </html>
