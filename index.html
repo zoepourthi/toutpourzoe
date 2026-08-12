@@ -279,6 +279,24 @@
     0%{ transform:translate(0,0) scale(0.6) rotate(0deg); opacity:1; }
     100%{ transform:translate(var(--dx), var(--dy)) scale(1) rotate(var(--rot)); opacity:0; }
   }
+  @keyframes cardLift{
+    0%{
+      transform:translateY(0) scale(1) rotate(var(--tilt,0deg));
+      box-shadow:0 18px 40px rgba(0,0,0,0.18), 0 2px 0 rgba(255,255,255,0.08) inset;
+    }
+    45%{
+      transform:translateY(-16px) scale(1.035) rotate(0deg);
+      box-shadow:0 32px 60px rgba(0,0,0,0.28), 0 2px 0 rgba(255,255,255,0.08) inset;
+    }
+    100%{
+      transform:translateY(0) scale(1) rotate(var(--tilt,0deg));
+      box-shadow:0 18px 40px rgba(0,0,0,0.18), 0 2px 0 rgba(255,255,255,0.08) inset;
+    }
+  }
+  .envelope.lifting{
+    animation:cardLift 0.6s ease;
+    z-index:5;
+  }
 </style>
 </head>
 <body>
@@ -334,9 +352,45 @@ const sections = [
     id: "futur",
     seal: "<3",
     title: "quand tu imagines notre futur",
-    hint: "",
+    hint: "(j'y pense tous les jours)",
     password: "toutelavie",
     text: "Mets ici une blague, un souvenir drôle, une photo ridicule de toi.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "tumemanques",
+    seal: "loin",
+    title: "quand je te manque trop",
+    hint: "on fixe vite une date",
+    password: "jeveuxtevoirtouslesmatinsdemavie",
+    text: "Écris ici ce que tu veux qu'elle sache sur la distance, l'attente.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "jtm",
+    seal: "<3",
+    title: "les raisons pour lesquelles je t'aime",
+    hint: "",
+    password: "jetaimealinfini",
+    text: "Écris ici ce qui la fait se sentir forte, capable, vue.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "besoindeparler",
+    seal: "<3",
+    title: "quand tu as besoin de parler de qlqch mais que tu n'oses pas",
+    hint: "",
+    password: "dismoitoutdamour",
+    text: "Écris ici comment tu veux qu'elle se sente en te parlant : écoutée, en sécurité.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "dodo",
+    seal: "<3",
+    title: "quand tu n'arrives pas à dormir",
+    hint: "",
+    password: "fairedodoavectoi",
+    text: "Écris ici à quel point tu es fier d'elle, et pourquoi.\nRemplace ce texte par tes propres mots.",
     images: []
   },
   {
@@ -363,6 +417,15 @@ const sections = [
     title: "quand tu veux qu'on fasse l'amour tout doux",
     hint: "",
     password: "toutdouxetpleindebisous",
+    text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
+    images: []
+  },
+  {
+    id: "sielleabesoindemaqueue",
+    seal: "<3",
+    title: "quand tu veux que je te baise comme une chienne",
+    hint: "",
+    password: "jeveuxtedefoncer",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
     images: []
   },
@@ -506,6 +569,11 @@ function tryOpen(id){
     card.classList.add('open');
     errorEl.textContent = '';
     spawnConfetti(card);
+    card.classList.add('lifting');
+    card.addEventListener('animationend', function handler(){
+      card.classList.remove('lifting');
+      card.removeEventListener('animationend', handler);
+    });
   } else {
     errorEl.textContent = 'Ce n\'est pas le bon mot… essaie encore.';
     card.animate(
