@@ -366,6 +366,141 @@
     min-height:30px;
     padding:0 20px;
   }
+
+  /* Machine à écrire */
+  .type-cursor{
+    display:inline-block;
+    margin-left:2px;
+    animation:blinkCursor 0.8s steps(1) infinite;
+  }
+  @keyframes blinkCursor{ 50%{ opacity:0; } }
+
+  /* Apparition en fondu au scroll */
+  .envelope{
+    opacity:0;
+    transform:translateY(24px) rotate(0deg);
+    transition:transform .5s ease, opacity .6s ease, box-shadow .3s ease;
+  }
+  .envelope.in-view{
+    opacity:1;
+    transform:translateY(0) rotate(var(--tilt,0deg));
+  }
+  .envelope.in-view:hover{
+    transform:rotate(0deg) translateY(-4px);
+  }
+
+  /* Bouton musique */
+  .music-toggle{
+    position:fixed;
+    top:18px;
+    left:18px;
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    border:1px solid var(--wax);
+    background:var(--bg1);
+    color:var(--wax);
+    font-size:16px;
+    cursor:pointer;
+    z-index:60;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  /* Réponse par email */
+  .reply-wrap{
+    max-width:420px;
+    margin:60px auto 0;
+    padding:0 24px;
+    text-align:center;
+  }
+  .reply-title{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:22px;
+    color:var(--ink);
+    margin-bottom:12px;
+  }
+  .reply-textarea{
+    width:100%;
+    min-height:90px;
+    padding:12px 14px;
+    border-radius:8px;
+    border:1px solid var(--wax);
+    background:var(--paper);
+    color:#2e2e2e;
+    font-family:'Crimson Text', serif;
+    font-size:15px;
+    resize:vertical;
+  }
+  body.night .reply-textarea{ color:#f2e0e8; }
+  .reply-send{
+    margin-top:12px;
+    background:var(--wax);
+    color:#fbe9d6;
+    border:none;
+    border-radius:6px;
+    padding:12px 22px;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.05em;
+    cursor:pointer;
+  }
+  .reply-send:hover{ background:#482133; }
+
+  /* Câlin virtuel */
+  .hug-trigger{
+    display:block;
+    text-align:center;
+    margin:24px auto 0;
+    font-family:'IBM Plex Mono', monospace;
+    font-size:13px;
+    letter-spacing:0.08em;
+    text-transform:uppercase;
+    color:var(--wax);
+    background:none;
+    border:1px solid var(--wax);
+    border-radius:30px;
+    padding:12px 22px;
+    cursor:pointer;
+    width:fit-content;
+    transition:background .2s ease, color .2s ease;
+  }
+  .hug-trigger:hover{ background:var(--wax); color:#fbe9d6; }
+  .hug-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(60,20,40,0.55);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:110;
+  }
+  .hug-overlay.show{ display:flex; }
+  .hug-message{
+    font-family:'Cormorant Garamond', serif;
+    font-style:italic;
+    font-size:32px;
+    color:#fff;
+    text-align:center;
+    padding:20px;
+    text-shadow:0 4px 20px rgba(0,0,0,0.4);
+  }
+  .hug-heart{
+    position:fixed;
+    top:-40px;
+    font-size:22px;
+    color:#fff;
+    animation-name:hugFall;
+    animation-timing-function:linear;
+    pointer-events:none;
+    z-index:109;
+  }
+  @keyframes hugFall{
+    0%{ transform:translateY(0) rotate(0deg); opacity:1; }
+    100%{ transform:translateY(110vh) rotate(360deg); opacity:0.15; }
+  }
 </style>
 </head>
 <body>
@@ -373,11 +508,15 @@
   <div class="bg-hearts" id="bgHearts"></div>
 
   <button class="mode-toggle" id="modeToggle">🌙</button>
+  <button class="music-toggle" id="musicToggle">🎵</button>
+  <audio id="bgMusic" loop>
+    <source src="" type="audio/mpeg">
+  </audio>
 
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
     <h1>LE PETIT SITE D'AMOUR POUR MA CHÉRIE</h1>
-    <p>chaque lettre a un mot de passe différent mon cœur.<br>demande moi seulement quand tu voudras en lire une.</p>
+    <p id="heroText"></p>
   </div>
 
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
@@ -386,6 +525,17 @@
   <div class="compliment-box" id="complimentBox"></div>
 
   <div class="desk" id="desk"></div>
+
+  <button class="hug-trigger" id="hugTrigger">🤗 Câlin virtuel</button>
+  <div class="hug-overlay" id="hugOverlay">
+    <div class="hug-message">un gros câlin pour toi 🤍</div>
+  </div>
+
+  <div class="reply-wrap">
+    <div class="reply-title">Tu veux me répondre ?</div>
+    <textarea id="replyText" class="reply-textarea" placeholder="Écris-moi un petit mot..."></textarea>
+    <button class="reply-send" id="replySend">Lui envoyer 💌</button>
+  </div>
 
   <footer>je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo</footer>
 
@@ -581,6 +731,15 @@ const sections = [
 
 const desk = document.getElementById('desk');
 
+const fadeInObserver = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting){
+      entry.target.classList.add('in-view');
+      fadeInObserver.unobserve(entry.target);
+    }
+  });
+}, { threshold: 0.15 });
+
 function renderSections(){
   desk.innerHTML = "";
   sections.forEach(sec => {
@@ -614,6 +773,7 @@ function renderSections(){
       </div>
     `;
     desk.appendChild(card);
+    fadeInObserver.observe(card);
   });
 
   document.querySelectorAll('.lock-row button').forEach(btn => {
@@ -799,6 +959,102 @@ complimentTrigger.addEventListener('click', () => {
     complimentBox.style.transition = 'opacity .4s ease';
     complimentBox.style.opacity = 1;
   }, 150);
+});
+
+/*
+  ===========================================================
+  TEXTE D'INTRO EN MACHINE À ÉCRIRE
+  Modifie heroTypedText si tu veux changer le message.
+  Utilise \n pour un saut de ligne (comme pour les lettres).
+  ===========================================================
+*/
+const heroTypedText = "chaque lettre a un mot de passe différent mon cœur.\ndemande moi seulement quand tu voudras en lire une.";
+
+function typeWriter(el, text, speed){
+  el.innerHTML = '<span class="typed"></span><span class="type-cursor">|</span>';
+  const typedSpan = el.querySelector('.typed');
+  const cursor = el.querySelector('.type-cursor');
+  let i = 0;
+  function step(){
+    if (i < text.length){
+      const ch = text[i];
+      typedSpan.innerHTML += (ch === '\n') ? '<br>' : ch;
+      i++;
+      setTimeout(step, speed);
+    } else {
+      cursor.remove();
+    }
+  }
+  step();
+}
+typeWriter(document.getElementById('heroText'), heroTypedText, 32);
+
+/*
+  ===========================================================
+  MUSIQUE DE FOND
+  Remplace le src="" ci-dessous (dans le HTML, balise <audio
+  id="bgMusic">) par le lien direct vers un fichier .mp3.
+  Elle doit cliquer sur le bouton 🎵 pour lancer le son
+  (les navigateurs bloquent le son automatique).
+  ===========================================================
+*/
+const musicToggle = document.getElementById('musicToggle');
+const bgMusic = document.getElementById('bgMusic');
+let musicPlaying = false;
+musicToggle.addEventListener('click', () => {
+  if (musicPlaying){
+    bgMusic.pause();
+    musicToggle.textContent = '🎵';
+  } else {
+    bgMusic.play().catch(() => {});
+    musicToggle.textContent = '🔇';
+  }
+  musicPlaying = !musicPlaying;
+});
+
+/*
+  ===========================================================
+  RÉPONSE PAR EMAIL
+  Remplace REPLY_EMAIL par ta vraie adresse email.
+  Le site n'a pas de base de données (c'est un simple fichier),
+  donc sa réponse t'arrive en ouvrant son app email avec le
+  texte déjà rempli, plutôt que d'être stockée sur le site.
+  ===========================================================
+*/
+const REPLY_EMAIL = "ton-email@example.com";
+document.getElementById('replySend').addEventListener('click', () => {
+  const text = document.getElementById('replyText').value.trim();
+  if (!text) return;
+  const subject = encodeURIComponent("Une réponse pour toi 💌");
+  const body = encodeURIComponent(text);
+  window.location.href = `mailto:${REPLY_EMAIL}?subject=${subject}&body=${body}`;
+});
+
+/*
+  ===========================================================
+  CÂLIN VIRTUEL
+  Rien à modifier ici.
+  ===========================================================
+*/
+function triggerHug(){
+  const overlay = document.getElementById('hugOverlay');
+  overlay.classList.add('show');
+  for (let i = 0; i < 36; i++){
+    const heart = document.createElement('div');
+    heart.className = 'hug-heart';
+    heart.textContent = '♥';
+    heart.style.left = (Math.random() * 100) + 'vw';
+    heart.style.fontSize = (14 + Math.random() * 20) + 'px';
+    heart.style.animationDuration = (2 + Math.random() * 2) + 's';
+    heart.style.animationDelay = (Math.random() * 1.2) + 's';
+    document.body.appendChild(heart);
+    setTimeout(() => heart.remove(), 5000);
+  }
+  setTimeout(() => overlay.classList.remove('show'), 3200);
+}
+document.getElementById('hugTrigger').addEventListener('click', triggerHug);
+document.getElementById('hugOverlay').addEventListener('click', (e) => {
+  if (e.target.id === 'hugOverlay') e.currentTarget.classList.remove('show');
 });
 </script>
 </body>
