@@ -118,7 +118,6 @@
     flex-direction:column;
     gap:12px;
     flex:1;
-    overflow-y:auto;
     transition:margin-top .5s ease;
   }
   .envelope.open .card-body{ margin-top:20px; }
@@ -543,7 +542,7 @@
 
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
-    <h1>LE PETIT SITE D'AMOUR POUR MA CHÉRIE</h1>
+    <h1>LE PETIT SITE D'AMOUR POUR MA&nbsp;CHÉRIE</h1>
     <p id="heroText"></p>
   </div>
 
@@ -563,6 +562,7 @@
     <div class="reply-title">Tu veux me dire quelque chose ?</div>
     <textarea id="replyText" class="reply-textarea" placeholder="Écris-moi un petit mot..."></textarea>
     <button class="reply-send" id="replySend">Lui envoyer 💌</button>
+    <div class="compliment-box" id="replyStatus"></div>
   </div>
 
   <footer>
@@ -1009,20 +1009,48 @@ musicToggle.addEventListener('click', () => {
 
 /*
   ===========================================================
-  RÉPONSE PAR EMAIL
-  Remplace REPLY_EMAIL par ta vraie adresse email.
-  Le site n'a pas de base de données (c'est un simple fichier),
-  donc sa réponse t'arrive en ouvrant son app email avec le
-  texte déjà rempli, plutôt que d'être stockée sur le site.
+  RÉPONSE ENVOYÉE DIRECTEMENT (sans ouvrir l'app email)
+  Remplace REPLY_EMAIL par ta vraie adresse.
+
+  IMPORTANT : la toute première fois qu'un message est envoyé,
+  le service (FormSubmit, gratuit) t'enverra un email à toi pour
+  confirmer que c'est bien ton adresse — il faut cliquer sur le
+  lien de confirmation dans cet email UNE SEULE FOIS. Après ça,
+  tous les messages suivants arrivent directement, sans confirmation.
   ===========================================================
 */
 const REPLY_EMAIL = "ton-email@example.com";
-document.getElementById('replySend').addEventListener('click', () => {
+const replySend = document.getElementById('replySend');
+const replyStatus = document.getElementById('replyStatus');
+
+replySend.addEventListener('click', async () => {
   const text = document.getElementById('replyText').value.trim();
   if (!text) return;
-  const subject = encodeURIComponent("Une réponse pour toi 💌");
-  const body = encodeURIComponent(text);
-  window.location.href = `mailto:${REPLY_EMAIL}?subject=${subject}&body=${body}`;
+
+  replySend.disabled = true;
+  replyStatus.textContent = "Envoi en cours...";
+
+  try {
+    const res = await fetch(`https://formsubmit.co/ajax/${REPLY_EMAIL}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        _subject: "Une réponse pour toi 💌",
+        message: text
+      })
+    });
+
+    if (res.ok){
+      document.getElementById('replyText').value = '';
+      replyStatus.textContent = "Envoyé ♥";
+    } else {
+      replyStatus.textContent = "Oups, ça n'a pas marché, réessaie.";
+    }
+  } catch (err){
+    replyStatus.textContent = "Oups, ça n'a pas marché, réessaie.";
+  }
+
+  replySend.disabled = false;
 });
 
 /*
