@@ -72,7 +72,7 @@
     box-shadow:0 18px 40px rgba(0,0,0,0.18), 0 2px 0 rgba(255,255,255,0.08) inset;
     color:#2a1a12;
     overflow:hidden;
-    min-height:230px;
+    height:320px;
     display:flex;
     flex-direction:column;
     transform:rotate(var(--tilt,0deg));
@@ -118,6 +118,7 @@
     flex-direction:column;
     gap:12px;
     flex:1;
+    overflow-y:auto;
     transition:margin-top .5s ease;
   }
   .envelope.open .card-body{ margin-top:20px; }
@@ -413,6 +414,21 @@
     align-items:center;
     justify-content:center;
   }
+  .music-panel{
+    position:fixed;
+    top:66px;
+    left:18px;
+    z-index:59;
+    display:none;
+    border-radius:12px;
+    overflow:hidden;
+    box-shadow:0 20px 40px rgba(0,0,0,0.3);
+  }
+  .music-panel.show{ display:block; }
+  .music-panel iframe{
+    display:block;
+    border:none;
+  }
 
   /* Réponse par email */
   .reply-wrap{
@@ -521,9 +537,9 @@
 
   <button class="mode-toggle" id="modeToggle">🌙</button>
   <button class="music-toggle" id="musicToggle">🎵</button>
-  <audio id="bgMusic" loop>
-    <source src="" type="audio/mpeg">
-  </audio>
+  <div class="music-panel" id="musicPanel">
+    <iframe id="spotifyFrame" src="" width="300" height="80" allow="encrypted-media"></iframe>
+  </div>
 
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
@@ -549,7 +565,9 @@
     <button class="reply-send" id="replySend">Lui envoyer 💌</button>
   </div>
 
-  <footer>je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo</footer>
+  <footer>
+    je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo
+  </footer>
 
 <script>
 /*
@@ -967,25 +985,26 @@ typeWriter(document.getElementById('heroText'), heroTypedText, 32);
 
 /*
   ===========================================================
-  MUSIQUE DE FOND
-  Remplace le src="" ci-dessous (dans le HTML, balise <audio
-  id="bgMusic">) par le lien direct vers un fichier .mp3.
-  Elle doit cliquer sur le bouton 🎵 pour lancer le son
-  (les navigateurs bloquent le son automatique).
+  MUSIQUE DE FOND (via Spotify)
+  Ajoute jusqu'à 10 morceaux ici. Pour trouver l'ID d'un morceau :
+  1. Ouvre le morceau sur open.spotify.com
+  2. Clique sur "Partager" → "Copier le lien"
+  3. Le lien ressemble à https://open.spotify.com/track/XXXXXXXXXXXX
+  4. Copie juste la partie XXXXXXXXXXXX (après /track/, avant le ?)
+  À chaque chargement de la page, un morceau au hasard est choisi.
   ===========================================================
 */
+const musicTracks = [
+  "2J9y1Oub0bozZGztQVrfpa" // Love You Right – Montell Fish, Clara La San
+];
+const chosenTrack = musicTracks[Math.floor(Math.random() * musicTracks.length)];
+document.getElementById('spotifyFrame').src =
+  `https://open.spotify.com/embed/track/${chosenTrack}?utm_source=generator&theme=0`;
+
 const musicToggle = document.getElementById('musicToggle');
-const bgMusic = document.getElementById('bgMusic');
-let musicPlaying = false;
+const musicPanel = document.getElementById('musicPanel');
 musicToggle.addEventListener('click', () => {
-  if (musicPlaying){
-    bgMusic.pause();
-    musicToggle.textContent = '🎵';
-  } else {
-    bgMusic.play().catch(() => {});
-    musicToggle.textContent = '🔇';
-  }
-  musicPlaying = !musicPlaying;
+  musicPanel.classList.toggle('show');
 });
 
 /*
