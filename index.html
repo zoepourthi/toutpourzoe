@@ -548,20 +548,20 @@
 
   <div class="progress-wrap"><div class="progress-bar" id="progressBar"></div></div>
 
-  <button class="compliment-trigger" id="complimentTrigger">Pioche un mot d'amour</button>
+  <button class="compliment-trigger" id="complimentTrigger">Pioche un compliment</button>
   <div class="compliment-box" id="complimentBox"></div>
 
   <div class="desk" id="desk"></div>
 
   <button class="hug-trigger" id="hugTrigger">Bouton d'amour</button>
   <div class="hug-overlay" id="hugOverlay">
-    <div class="hug-message">JE T'AIME POUR TOUTE LA VIE 🤍</div>
+    <div class="hug-message">JE T'AIME POUR TOUTE MA VIE 🤍</div>
   </div>
 
   <div class="reply-wrap">
     <div class="reply-title">Tu veux me dire quelque chose ?</div>
     <textarea id="replyText" class="reply-textarea" placeholder="Écris-moi un petit mot..."></textarea>
-    <button class="reply-send" id="replySend">Envoyer 💌</button>
+    <button class="reply-send" id="replySend">Lui envoyer 💌</button>
     <div class="compliment-box" id="replyStatus"></div>
   </div>
 
@@ -607,7 +607,7 @@ const sections = [
   {
     id: "futur",
     seal: "<3",
-    title: "quand tu imagines notre futur",
+    title: "quand tu imagines notre ",
     hint: "",
     password: "toutelavie",
     text: "Mets ici une blague, un souvenir drôle, une photo ridicule de toi.\nRemplace ce texte par tes propres mots.",
@@ -615,10 +615,10 @@ const sections = [
   },
   {
     id: "tumemanques",
-    seal: "<3",
-    title: "mes premières fois",
+    seal: "loin",
+    title: "quand je te manque trop",
     hint: "",
-    password: "toutesavectoi",
+    password: "jeveuxtevoirtouslesmatinsdemavie",
     text: "Écris ici ce que tu veux qu'elle sache sur la distance, l'attente.\nRemplace ce texte par tes propres mots.",
     images: []
   },
@@ -679,7 +679,7 @@ const sections = [
   {
     id: "changemerci",
     seal: "<3",
-    title: "comment tu m'as changé",
+    title: "si tu veux savoir comment tu m'as changé",
     hint: "",
     password: "mercimonamour",
     text: "Écris ici ce que tu veux qu'elle sache : que ça ne remet rien en cause entre vous.\nRemplace ce texte par tes propres mots.",
@@ -905,25 +905,10 @@ modeToggle.addEventListener('click', () => {
   ===========================================================
 */
 const complimentsList = [
-  "je suis trop fier que tu sois ma copine",
-  "t'es la plus belle femme du monde",
-  "je veux embrasser que toi toute ma vie",
-  "j'adore te regarder plein de fois tout au long de la journée",
-  "j'ai adoré ta voix dès le début",
-  "j'aime trop ton petit corps",
-  "t'es la seule personne à qui je veux tout dire et tout faire",
-  "je veux t'avoir dans mes bras tous les jours de ma vie",
-  "je veux mes mains sur ton corps tout le temps",
-  "j'adore chaque petit détail de toi",
-  "je suis trop heureux de tout découvrir avec toi",
-  "j'adore ta facon de parler quand tu me racontes un truc",
-  "t'es tellement importante pour moi mon amour",
-  "quand je te vois au réveil, je me sens tellement heureux",
-  "j'aime tout de toi",
-  "je veux que ton odeur me suive toutes les secondes de ma vie",
-  "tes yeux sont tellement beaux",
-  "j'aime tellement avoir tes lèvres sur les miennes",
-  "t'as un corps parfait mon amour",
+  "Écris ici un compliment sincère pour elle.",
+  "Mets-en un deuxième, différent du premier.",
+  "Un troisième, sur un détail précis qu'elle a.",
+  "Autant que tu veux, plus il y en a plus la surprise dure."
 ];
 const complimentTrigger = document.getElementById('complimentTrigger');
 const complimentBox = document.getElementById('complimentBox');
@@ -943,10 +928,10 @@ function getComplimentUsage(){
 complimentTrigger.addEventListener('click', () => {
   const usage = getComplimentUsage();
 
-  if (usage.count >= 2){
+  if (usage.count >= 1){
     complimentBox.style.opacity = 0;
     setTimeout(() => {
-      complimentBox.textContent = "Reviens demain pour un autre mot d'amour";
+      complimentBox.textContent = "Reviens demain pour un autre compliment 💛";
       complimentBox.style.transition = 'opacity .4s ease';
       complimentBox.style.opacity = 1;
     }, 150);
@@ -1034,7 +1019,7 @@ musicToggle.addEventListener('click', () => {
   tous les messages suivants arrivent directement, sans confirmation.
   ===========================================================
 */
-const REPLY_EMAIL = "0804c9b2176b26cc2fd94c53de8c6387";
+const REPLY_EMAIL = "ton-email@example.com";
 const replySend = document.getElementById('replySend');
 const replyStatus = document.getElementById('replyStatus');
 
