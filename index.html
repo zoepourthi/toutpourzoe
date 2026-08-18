@@ -943,7 +943,7 @@ function getComplimentUsage(){
 complimentTrigger.addEventListener('click', () => {
   const usage = getComplimentUsage();
 
-  if (usage.count >= 2){
+  if (usage.count >= 1){
     complimentBox.style.opacity = 0;
     setTimeout(() => {
       complimentBox.textContent = "Reviens demain pour un autre mot d'amour";
