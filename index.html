@@ -528,6 +528,12 @@
     0%{ transform:translateY(0) rotate(0deg); opacity:1; }
     100%{ transform:translateY(110vh) rotate(360deg); opacity:0.15; }
   }
+
+  /* Mot secret dans le footer (déclencheur de la lettre cachée) */
+  #secretWord{
+    cursor:default;
+    user-select:none;
+  }
 </style>
 </head>
 <body>
@@ -566,7 +572,7 @@
   </div>
 
   <footer>
-    je t'aime et je veux te faire des surprises d'amour chaque mois de ma vie zozo
+    je t'aime et je veux te faire des <span id="secretWord">surprises</span> d'amour chaque mois de ma vie zozo
   </footer>
 
 <script>
@@ -722,6 +728,26 @@ const sections = [
     images: []
   }
 ];
+
+/*
+  ===========================================================
+  LETTRE CACHÉE
+  Elle n'apparaît qu'après un triple-clic sur le mot "surprises"
+  dans le footer. Tant qu'elle n'a pas été révélée, elle n'existe
+  pas dans le DOM ni dans "sections", donc invisible et absente
+  de la barre de progression.
+  Change le mot de passe et le texte comme tu veux ci-dessous.
+  ===========================================================
+*/
+const hiddenSection = {
+  id: "enviedetoi",
+  seal: "<3",
+  title: "quand t'as envie de moi",
+  hint: "chut... celle-ci n'existe pas vraiment",
+  password: "enviedetoi",
+  text: "mon amour,\nsi tu lis cette lettre, c’est que tu as trouvé le petit secret caché sur le site, et rien que ça, ça me fait sourire, ça me donne juste plus envie de toi.\n\nj’ai envie de te dire ce que je ressens quand je pense à toi la nuit, quand je repense à ton corps contre le mien, à ta peau, à ta chaleur. j’ai envie de tout ton corps, de le sentir contre moi, de le découvrir encore et encore comme si c’était la première fois à chaque fois.\n\nj’ai envie de prendre mon temps avec toi, de t’embrasser partout, doucement puis moins doucement, de sentir ta respiration changer sous mes mains, de te faire perdre un peu la tête comme tu me la fais perdre.\nj’ai envie de te regarder dans les yeux pendant qu’on est collés l’un à l’autre, de te chuchoter à quel point je te désire, de sentir ton corps répondre au mien.\n\nj’ai envie de toi le matin, encore endormie, j’ai envie de toi le soir, quand la journée est finie et qu’il ne reste plus que nous deux. j’ai envie de toi n’importe quand, n’importe où, tant que c’est toi.\n\ntu me rends fou d’une façon que je n’avais jamais connue avant toi, et j’ai hâte de te le montrer, encore et encore, autant de fois que tu voudras.\n\nje t’aime et j’ai tellement envie de toi zoé.",
+    images: []
+};
 
 const desk = document.getElementById('desk');
 
@@ -1101,6 +1127,71 @@ document.getElementById('hugTrigger').addEventListener('click', triggerHug);
 document.getElementById('hugOverlay').addEventListener('click', (e) => {
   if (e.target.id === 'hugOverlay') e.currentTarget.classList.remove('show');
 });
+
+/*
+  ===========================================================
+  LETTRE CACHÉE — DÉCLENCHEUR
+  Triple-clic (3 clics en moins de 800ms) sur le mot "surprises"
+  dans le footer révèle l'enveloppe scellée à la fin de la grille.
+  Une fois révélée, elle fonctionne exactement comme les autres :
+  mot de passe classique pour l'ouvrir.
+  ===========================================================
+*/
+let secretClickTimes = [];
+let hiddenRevealed = false;
+
+document.getElementById('secretWord').addEventListener('click', () => {
+  const now = Date.now();
+  secretClickTimes.push(now);
+  secretClickTimes = secretClickTimes.filter(t => now - t < 800);
+
+  if (secretClickTimes.length >= 3 && !hiddenRevealed){
+    hiddenRevealed = true;
+    revealHiddenLetter();
+  }
+});
+
+function revealHiddenLetter(){
+  const card = document.createElement('div');
+  card.className = 'envelope';
+  card.id = 'card-' + hiddenSection.id;
+
+  card.innerHTML = `
+    <div class="flap"></div>
+    <div class="seal">${hiddenSection.seal}</div>
+    <div class="card-body">
+      <div class="label">Enveloppe scellée</div>
+      <h3 class="title">${hiddenSection.title}</h3>
+      <p class="hint locked-hint">${hiddenSection.hint}</p>
+      <div class="lock-row">
+        <input type="password" placeholder="mot de passe" data-id="${hiddenSection.id}">
+        <button data-id="${hiddenSection.id}">Ouvrir</button>
+      </div>
+      <div class="error" id="error-${hiddenSection.id}"></div>
+      <div class="letter">
+        <p>${hiddenSection.text}</p>
+        <button class="relock" data-id="${hiddenSection.id}">Refermer</button>
+      </div>
+    </div>
+  `;
+
+  desk.appendChild(card);
+  sections.push(hiddenSection);
+
+  card.querySelector('.lock-row button').addEventListener('click', () => tryOpen(hiddenSection.id));
+  card.querySelector('.lock-row input').addEventListener('keydown', e => {
+    if (e.key === 'Enter') tryOpen(hiddenSection.id);
+  });
+  card.querySelector('.relock').addEventListener('click', () => {
+    card.classList.remove('open');
+    card.querySelector('input').value = '';
+    document.getElementById('error-' + hiddenSection.id).textContent = '';
+  });
+
+  fadeInObserver.observe(card);
+  updateProgress();
+  card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
 </script>
 </body>
 </html>
