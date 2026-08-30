@@ -48,6 +48,10 @@
     color:var(--ink);
     letter-spacing:0.01em;
   }
+  .title-break{ display:none; }
+  @media (max-width:600px){
+    .title-break{ display:block; }
+  }
   .hero p{
     max-width:480px;
     margin:0 auto;
@@ -534,6 +538,12 @@
     cursor:default;
     user-select:none;
   }
+
+  /* Mot déclencheur du dernier paragraphe caché (invisible, même style que le texte) */
+  .hidden-trigger{
+    cursor:default;
+    user-select:none;
+  }
 </style>
 </head>
 <body>
@@ -548,7 +558,7 @@
 
   <div class="hero">
     <div class="eyebrow">des petites lettres selon tes besoins</div>
-    <h1>DES PETITS MOTS D'AMOUR POUR ZOZO</h1>
+    <h1>DES PETITS<span class="title-break"></span> MOTS D'AMOUR<span class="title-break"></span> POUR ZOZO</h1>
     <p id="heroText"></p>
   </div>
 
@@ -739,13 +749,26 @@ const sections = [
   Change le mot de passe et le texte comme tu veux ci-dessous.
   ===========================================================
 */
+/*
+  hiddenSection : la lettre cachée.
+  - text            : tout le texte SAUF le dernier paragraphe et son dernier mot.
+  - triggerWord     : le tout dernier mot du paragraphe visible (ex: "voudras.").
+                       Il est affiché normalement, sans aucun style différent,
+                       mais un triple-clic dessus révèle le paragraphe caché.
+  - hiddenParagraph : le dernier paragraphe, invisible tant qu'on n'a pas
+                       triple-cliqué sur triggerWord.
+  Remplace ces 3 champs par ton propre texte, en gardant bien le dernier mot
+  du dernier paragraphe VISIBLE dans "triggerWord" (pas dans "text").
+*/
 const hiddenSection = {
   id: "enviedetoi",
   seal: "<3",
   title: "quand t'as envie de moi",
   hint: "chut... celle-ci n'existe pas vraiment",
   password: "enviedetoi",
-  text: "mon amour si tu es là c’est que t’as envie que je m’occupe de ton petit corps, je bande juste à l’idée que tu me réclames de lire ça. \nje veux parler de ton corps avant de commencer, pour que je sois bien dur, je pense à ton gros cul et ton petit corps, dès que je pose ma main dessus j’ai la queue toute dure et encore plus quand j’ai la queue dessus. j’imagine ta chatte et j’imagine te remplir. et je pense à tes gros seins qui me font bander tous les jours depuis des mois, j’aime trop avoir une main sur l’un de tes seins quand on s’embrasse ou quand on est couchés dans le lit. \nj’ai envie de te voir faire la pute pour ma queue, je vais te mettre à genoux et te faire tirer la langue, jte laisserai sortir ma queue de mon pantalon et lécher mon caleçon et ma queue. et ensuite j’attraperai ta tête avec mes mains et je te ferai sucer comme une chienne jte mettrais des petites gifles pendant qtu suceras ma bite, j’veux remplir ta bouche et ta gorge. te baiser la bouche et te faire baver partout sur ma queue, que ca coule sur tes gros seins de chienne. \net ensuite je te fais cambrer en string ou en collant sans culotte pour que je déchire tout et que je vois tes trous de chienne, jvais tellement te lécher la chatte et ton petit trou, j’ai trop hâte d’avoir leur goût dans ma bouche. je veux te claquer le cul, le rendre rouge, qu’il ai des marques de moi qui restent longtemps. \nje veux prendre tes cheveux dans ma main et te remplir tes trous en levrette, rentrer ma queue doucement dans ta chatte et mettre mon pouce dans ton cul, cracher sur ton dos et te donner des gros coups de queues, te faire crier partout dans la chambre, dans toutes les pièces de la maison et en dehors de la maison. je vais t’attacher les mains aux 2 coins du lit et faire ce que je veux de toi, te défoncer la chatte et le cul et regarder ton petit visage et tes gros seins bouger, je vais me vider partout sur toi bébé.",
+  text: "mon amour,\nsi tu lis cette lettre, c’est que tu as trouvé le petit secret caché sur le site, et rien que ça, ça me fait sourire, ça me donne juste plus envie de toi.\n\nj’ai envie de te dire ce que je ressens quand je pense à toi la nuit, quand je repense à ton corps contre le mien, à ta peau, à ta chaleur. j’ai envie de tout ton corps, de le sentir contre moi, de le découvrir encore et encore comme si c’était la première fois à chaque fois.\n\nj’ai envie de prendre mon temps avec toi, de t’embrasser partout, doucement puis moins doucement, de sentir ta respiration changer sous mes mains, de te faire perdre un peu la tête comme tu me la fais perdre.\nj’ai envie de te regarder dans les yeux pendant qu’on est collés l’un à l’autre, de te chuchoter à quel point je te désire, de sentir ton corps répondre au mien.\n\nj’ai envie de toi le matin, encore endormie, j’ai envie de toi le soir, quand la journée est finie et qu’il ne reste plus que nous deux. j’ai envie de toi n’importe quand, n’importe où, tant que c’est toi.\n\ntu me rends fou d’une façon que je n’avais jamais connue avant toi, et j’ai hâte de te le montrer, encore et encore, autant de fois que tu ",
+  triggerWord: "voudras.",
+  hiddenParagraph: "je t’aime et j’ai tellement envie de toi zoé.",
   images: []
 };
 
@@ -1156,6 +1179,9 @@ function revealHiddenLetter(){
   card.className = 'envelope';
   card.id = 'card-' + hiddenSection.id;
 
+  const triggerId = 'hiddenTrigger-' + hiddenSection.id;
+  const hiddenParaId = 'hiddenPara-' + hiddenSection.id;
+
   card.innerHTML = `
     <div class="flap"></div>
     <div class="seal">${hiddenSection.seal}</div>
@@ -1169,7 +1195,8 @@ function revealHiddenLetter(){
       </div>
       <div class="error" id="error-${hiddenSection.id}"></div>
       <div class="letter">
-        <p>${hiddenSection.text}</p>
+        <p>${hiddenSection.text}<span class="hidden-trigger" id="${triggerId}">${hiddenSection.triggerWord}</span></p>
+        <p id="${hiddenParaId}" style="display:none;">${hiddenSection.hiddenParagraph}</p>
         <button class="relock" data-id="${hiddenSection.id}">Refermer</button>
       </div>
     </div>
@@ -1186,6 +1213,19 @@ function revealHiddenLetter(){
     card.classList.remove('open');
     card.querySelector('input').value = '';
     document.getElementById('error-' + hiddenSection.id).textContent = '';
+  });
+
+  // Triple-clic sur le dernier mot du paragraphe visible pour révéler le dernier paragraphe caché
+  let hiddenParaClickTimes = [];
+  let hiddenParaRevealed = false;
+  card.querySelector('#' + triggerId).addEventListener('click', () => {
+    const now = Date.now();
+    hiddenParaClickTimes.push(now);
+    hiddenParaClickTimes = hiddenParaClickTimes.filter(t => now - t < 800);
+    if (hiddenParaClickTimes.length >= 3 && !hiddenParaRevealed){
+      hiddenParaRevealed = true;
+      document.getElementById(hiddenParaId).style.display = 'block';
+    }
   });
 
   fadeInObserver.observe(card);
